@@ -5,3 +5,7 @@ streamlit==1.24.1
 poppler-utils==0.1.0
 openai
 requests
+langchain
+langchain_core
+langchain-community
+langchain-openai
