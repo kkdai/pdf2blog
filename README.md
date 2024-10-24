@@ -2,6 +2,14 @@
 
 這是一個基於 Streamlit 和 OpenAI 的應用程式，能夠自動將 PDF 格式的投影片轉換成結構化的技術部落格文章。
 
+<table>
+  <tr>
+    <td><a href="img/pic1.png"><img src="img/pic1.png" alt="pic1" width="200"/></a></td>
+    <td><a href="img/pic2.png"><img src="img/pic2.png" alt="pic2" width="200"/></a></td>
+    <td><a href="img/pic3.png"><img src="img/pic3.png" alt="pic3" width="200"/></a></td>
+  </tr>
+</table>
+
 ## 功能特點
 
 - 📝 自動分析 PDF 投影片內容
