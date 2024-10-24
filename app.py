@@ -16,6 +16,70 @@ api_key = os.getenv("openai_api_key")
 pdf_file_text = []
 
 
+def save_image(image: Image.Image, page_num: int) -> str:
+    """
+    保存圖片並返回檔案路徑
+    """
+    if not os.path.exists("temp_images"):
+        os.makedirs("temp_images")
+
+    image_path = f"temp_images/page_{page_num}.jpg"
+    image.save(image_path)
+    return image_path
+
+
+def generate_intro_and_future(content: str) -> dict:
+    """
+    基於內容生成前言和未來展望
+    """
+    llm = ChatOpenAI(
+        model_name="gpt-4o",
+        temperature=0.3,
+        max_tokens=2000,
+        api_key=api_key,
+    )
+
+    prompt_template = """
+    請根據以下技術內容，分別生成兩個章節：前言和未來展望。
+    將結果分成兩個部分回傳，以 [前言] 和 [未來展望] 標記開始。
+
+    要求：
+    1. 前言（## 開頭）：
+       - 介紹本文主題和重要性
+       - 說明文章要解決的問題
+       - 簡述主要內容架構
+    2. 未來展望（## 開頭）：
+       - 討論技術的發展方向
+       - 提出可能的應用場景
+       - 預測未來趨勢
+    3. 使用台灣用語的繁體中文
+    4. 使用 Markdown 格式
+    5. 每個章節至少 300 字
+
+    內容：
+    {text}
+
+    請以下列格式回傳：
+    [前言]
+    (前言內容...)
+
+    [未來展望]
+    (未來展望內容...)
+    """
+
+    prompt = PromptTemplate.from_template(prompt_template)
+    summarize_chain = load_summarize_chain(llm=llm, chain_type="stuff", prompt=prompt)
+    document = Document(page_content=content)
+    result = summarize_chain.invoke([document])
+
+    # 分割前言和未來展望
+    sections = result["output_text"].split("[未來展望]")
+    intro = sections[0].replace("[前言]", "").strip()
+    future = sections[1].strip() if len(sections) > 1 else ""
+
+    return {"intro": intro, "future": future}
+
+
 def langchain_detect_image(
     image: Image.Image, extra_text: str = "", page_num: int = 1
 ) -> dict:
@@ -29,7 +93,7 @@ def langchain_detect_image(
     chat = ChatOpenAI(
         model="gpt-4o",
         temperature=0.3,
-        max_tokens=1500,  # 增加 token 以獲取更詳細的描述
+        max_tokens=1500,
         api_key=api_key,
     )
 
@@ -46,7 +110,6 @@ def langchain_detect_image(
                - 重要的術語解釋
                - 技術原理說明
                - 實際應用場景
-               - 可能遇到的挑戰和解決方案
             4. 如果投影片中有程式碼，請解釋程式碼的功能和重點
             5. 如果有圖表，請詳細解釋圖表的含義
             6. 使用台灣用語的繁體中文撰寫
@@ -85,58 +148,17 @@ def langchain_detect_image(
         }
 
 
-def generate_blog_post(sections: list) -> dict:
+def extract_content_from_json(json_obj):
     """
-    將各個章節整合成完整的技術部落格文章
+    從 JSON 物件中提取內容
     """
-    llm = ChatOpenAI(
-        model_name="gpt-4o",
-        temperature=0.3,
-        max_tokens=7000,
-        api_key=api_key,
-    )
-
-    # 將所有章節內容合併成一個字符串
-    all_sections = "\n\n".join(sections)
-
-    prompt_template = """
-    請根據以下各個章節的內容，重新組織並撰寫一篇完整的技術部落格文章。
-
-    要求：
-    1. 使用台灣用語的繁體中文
-    2. 文章結構需包含：
-       - 文章標題（# 開頭）
-       - 前言（## 開頭）：介紹本文主題和重要性
-       - 技術背景（## 開頭）：說明相關技術背景和基本概念
-       - 核心內容（根據提供的章節重新組織，使用 ## 或 ### 標題）
-       - 實作建議（## 開頭）：提供實際應用的建議和最佳實踐
-       - 未來展望（## 開頭）：討論技術的發展方向和潛在應用
-       - 結論（## 開頭）：總結全文重點
-    3. 內文要求：
-       - 總字數至少 3000 字
-       - 確保內容的連貫性和邏輯性
-       - 適當引用原章節的技術細節
-       - 加入自己的見解和分析
-    4. 格式要求：
-       - 使用 Markdown 格式
-       - 適當使用粗體（**文字**）強調重要概念
-       - 使用引用區塊（> 文字）標註重要說明
-       - 使用項目符號整理重點
-       - 必要時使用表格整理比較資訊
-       - 保留原始程式碼區塊（如果有）
-
-    以下是各章節內容：
-    {text}
-
-    請開始撰寫完整的部落格文章：
-    """
-
-    prompt = PromptTemplate.from_template(prompt_template)
-    summarize_chain = load_summarize_chain(llm=llm, chain_type="stuff", prompt=prompt)
-    document = Document(page_content=all_sections)
-    summary = summarize_chain.invoke([document])
-
-    return {"markdown": summary["output_text"], "rendered": summary["output_text"]}
+    if json_obj:
+        choices = json_obj.get("choices", [])
+        if choices:
+            content = choices[0].get("message", {}).get("content", "")
+            return content
+        return "choices 列表為空"
+    return "JSON 物件為空"
 
 
 def main():
@@ -161,6 +183,7 @@ def main():
 
             # 用於存儲每頁的詳細分析
             page_sections = []
+            image_paths = []
 
             for i in range(total_pages):
                 progress = (i + 1) / total_pages
@@ -170,16 +193,23 @@ def main():
                 current_page_text = pdfReader.pages[i].extract_text()
                 current_page_image = pdf_images[i]
 
-                # 顯示圖片
-                st.image(
-                    current_page_image, caption=f"第 {i+1} 頁", use_column_width=True
-                )
+                # 保存圖片
+                image_path = save_image(current_page_image, i + 1)
+                image_paths.append(image_path)
+
+                # 顯示圖片（30% 寬度）
+                col1, col2, col3 = st.columns([3, 4, 3])
+                with col2:
+                    st.image(current_page_image, caption=f"第 {i+1} 頁")
 
                 # 分析圖片和文字內容
                 openai_response = langchain_detect_image(
                     current_page_image, current_page_text, i + 1
                 )
                 result_str = extract_content_from_json(openai_response)
+
+                # 在每個章節後添加圖片引用
+                result_str += f"\n\n![第 {i+1} 頁]({image_path})\n\n---\n"
 
                 # 儲存這一頁的分析結果
                 page_sections.append(result_str)
@@ -194,24 +224,38 @@ def main():
 
             progress_bar.progress(1.0)
 
-            # 產生完整部落格文章
+            # 生成完整部落格文章
             with st.spinner("正在整合內容，產生完整技術部落格文章..."):
                 st.write("---")
                 st.subheader("技術部落格文章")
 
-                # 生成部落格文章
-                blog_content = generate_blog_post(page_sections)
+                # 合併所有內容
+                full_content = "\n\n".join(page_sections)
+
+                # 生成前言和未來展望
+                intro_and_future = generate_intro_and_future(full_content)
+
+                # 組合最終文章（未來展望放在最後）
+                final_blog_content = f"""
+{intro_and_future['intro']}
+
+## 技術內容
+
+{full_content}
+
+{intro_and_future['future']}
+"""
 
                 # 顯示結果
-                tab1, tab2, tab3 = st.tabs(["渲染結果", "Markdown 原始碼", "分頁內容"])
+                tab1, tab2 = st.tabs(["渲染結果", "Markdown 原始碼"])
 
                 with tab1:
-                    st.markdown(blog_content["rendered"])
+                    st.markdown(final_blog_content)
 
                 with tab2:
                     st.text_area(
                         "Markdown 原始碼",
-                        value=blog_content["markdown"],
+                        value=final_blog_content,
                         height=500,
                         key="markdown_source",
                     )
@@ -219,31 +263,17 @@ def main():
                         st.write("Markdown 原始碼已複製到剪貼簿！")
                         st.text_area(
                             "",
-                            value=blog_content["markdown"],
+                            value=final_blog_content,
                             height=0,
                             key="hidden_copy_area",
                         )
 
-                with tab3:
-                    for i, section in enumerate(page_sections):
-                        with st.expander(f"第 {i+1} 頁詳細內容"):
-                            st.markdown(section)
-
         except Exception as e:
             st.error(f"處理 PDF 時發生錯誤: {str(e)}")
+            st.error(f"錯誤詳情: {str(e)}")
+            import traceback
 
-
-def extract_content_from_json(json_obj):
-    """
-    從 JSON 物件中提取內容
-    """
-    if json_obj:
-        choices = json_obj.get("choices", [])
-        if choices:
-            content = choices[0].get("message", {}).get("content", "")
-            return content
-        return "choices 列表為空"
-    return "JSON 物件為空"
+            st.error(f"堆疊追蹤: {traceback.format_exc()}")
 
 
 if __name__ == "__main__":
