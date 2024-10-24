@@ -19,20 +19,20 @@
 
 ## 安裝說明
 
-1. 克隆專案：
+1. Clone 專案：
 
 ```bash
 git clone https://github.com/yourusername/pdf-slides-to-blog.git
 cd pdf-slides-to-blog
 ```
 
-2. 安裝依賴：
+2. 安裝 Dependency：
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 安裝系統依賴（根據您的作業系統）：
+3. 安裝系統 Dependency：（根據您的作業系統）：
 
 Ubuntu/Debian：
 
@@ -143,20 +143,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
-## 更新日誌
-
-### [1.0.0] - 2024-03-21
-
-- 初始版本發布
-- 支援 PDF 投影片轉換為部落格文章
-- 加入 Markdown 格式輸出
-- 整合 OpenAI API 進行內容分析
-
-## 聯絡方式
-
-如有任何問題或建議，歡迎聯絡：
-
-- 建立 Issue
-- 發送 Pull Request
-- 寄送電子郵件至 [your.email@example.com](mailto:your.email@example.com)
