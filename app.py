@@ -16,18 +16,6 @@ api_key = os.getenv("openai_api_key")
 pdf_file_text = []
 
 
-def save_image(image: Image.Image, page_num: int) -> str:
-    """
-    保存圖片並返回檔案路徑
-    """
-    if not os.path.exists("temp_images"):
-        os.makedirs("temp_images")
-
-    image_path = f"temp_images/page_{page_num}.jpg"
-    image.save(image_path)
-    return image_path
-
-
 def generate_intro_and_future(content: str) -> dict:
     """
     基於內容生成前言和未來展望
@@ -183,7 +171,6 @@ def main():
 
             # 用於存儲每頁的詳細分析
             page_sections = []
-            image_paths = []
 
             for i in range(total_pages):
                 progress = (i + 1) / total_pages
@@ -192,10 +179,6 @@ def main():
                 # 分析文字內容
                 current_page_text = pdfReader.pages[i].extract_text()
                 current_page_image = pdf_images[i]
-
-                # 保存圖片
-                image_path = save_image(current_page_image, i + 1)
-                image_paths.append(image_path)
 
                 # 顯示圖片（30% 寬度）
                 col1, col2, col3 = st.columns([3, 4, 3])
@@ -209,7 +192,7 @@ def main():
                 result_str = extract_content_from_json(openai_response)
 
                 # 在每個章節後添加圖片引用
-                result_str += f"\n\n![第 {i+1} 頁]({image_path})\n\n---\n"
+                result_str += f"\n\n -第 {i+1} 頁 的圖片(暫定)-\n\n---\n"
 
                 # 儲存這一頁的分析結果
                 page_sections.append(result_str)
