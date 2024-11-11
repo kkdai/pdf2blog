@@ -40,7 +40,7 @@ cd pdf-slides-to-blog
 uv install
 ```
 
-3. 安裝系統 Dependency：（根據��的作業系統）：
+3. 安裝系統 Dependency：（根據你的作業系統）：
 
 Ubuntu/Debian：
 
