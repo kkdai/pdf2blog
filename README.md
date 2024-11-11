@@ -40,7 +40,7 @@ cd pdf-slides-to-blog
 poetry install
 ```
 
-3. 安裝系統 Dependency：（根���您的作業系統）：
+3. 安裝系統 Dependency：（根據您的作業系統）：
 
 Ubuntu/Debian：
 
