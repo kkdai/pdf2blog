@@ -21,7 +21,7 @@
 
 ## 系統需求
 
-- Python 3.8 或更高版本
+- Python 3.9 或更高版本
 - OpenAI API 金鑰
 - Poppler（用於 PDF 轉換）
 
@@ -30,14 +30,15 @@
 1. Clone 專案：
 
 ```bash
-git clone https://github.com/yourusername/pdf-slides-to-blog.git
-cd pdf-slides-to-blog
+git clone https://github.com/kkdai/pdf2blog.git
+cd pdf2blog
 ```
 
 2. 安裝 Dependency：
 
 ```bash
-uv install
+pip install uv
+uv sync
 ```
 
 3. 安裝系統 Dependency：（根據你的作業系統）：
@@ -65,7 +66,7 @@ export openai_api_key="your-api-key-here"
 1. 啟動應用程式：
 
 ```bash
-streamlit run app.py
+uv run streamlit run app.py
 ```
 
 2. 在瀏覽器中開啟顯示的 URL（通常是 <http://localhost:8501）>
@@ -150,3 +151,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
