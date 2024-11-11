@@ -1,1 +1,1 @@
-poppler-utils
+# This file is no longer needed as dependencies are managed using uv.

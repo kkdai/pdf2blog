@@ -37,10 +37,10 @@ cd pdf-slides-to-blog
 2. 安裝 Dependency：
 
 ```bash
-pip install -r requirements.txt
+poetry install
 ```
 
-3. 安裝系統 Dependency：（根據您的作業系統）：
+3. 安裝系統 Dependency：（根���您的作業系統）：
 
 Ubuntu/Debian：
 
@@ -150,4 +150,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-```

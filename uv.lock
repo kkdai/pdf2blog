@@ -1,0 +1,39 @@
+[[package]]
+name = "streamlit"
+version = "1.24.1"
+
+[[package]]
+name = "pdf2image"
+version = "1.16.3"
+
+[[package]]
+name = "Pillow"
+version = "9.5.0"
+
+[[package]]
+name = "pypdf"
+version = "3.12.1"
+
+[[package]]
+name = "poppler-utils"
+version = "0.1.0"
+
+[[package]]
+name = "langchain"
+version = "0.1.0"
+
+[[package]]
+name = "langchain-core"
+version = "0.1.10"
+
+[[package]]
+name = "langchain-community"
+version = "0.0.13"
+
+[[package]]
+name = "langchain-openai"
+version = "0.0.2"
+
+[[package]]
+name = "python-dotenv"
+version = "1.0.0"
