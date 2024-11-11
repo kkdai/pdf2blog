@@ -37,10 +37,10 @@ cd pdf-slides-to-blog
 2. 安裝 Dependency：
 
 ```bash
-poetry install
+uv install
 ```
 
-3. 安裝系統 Dependency：（根據您的作業系統）：
+3. 安裝系統 Dependency：（根據��的作業系統）：
 
 Ubuntu/Debian：
 
