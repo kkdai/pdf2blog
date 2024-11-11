@@ -58,7 +58,8 @@ brew install poppler
 4. 設定環境變數：
 
 ```bash
-export openai_api_key="your-api-key-here"
+export OPENAI_API_KEY="your-api-key-here"
+export OPENAI_MODEL="gpt-4o"
 ```
 
 ## 使用方法

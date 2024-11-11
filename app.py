@@ -1,18 +1,21 @@
-import streamlit as st
-from pdf2image import convert_from_bytes
-from pypdf import PdfReader
 import base64
-import os
 import io
+import os
+from typing import Final, Optional
+
+import streamlit as st
 from langchain.chains.summarize import load_summarize_chain
-from langchain_core.prompts import PromptTemplate
 from langchain.docstore.document import Document
-from langchain_openai import ChatOpenAI
 from langchain.schema.messages import HumanMessage
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from pdf2image import convert_from_bytes
 from PIL import Image
+from pypdf import PdfReader
 
 # OpenAI API Key from environment variable
-api_key = os.getenv("openai_api_key")
+api_key: Final[Optional[str]] = os.getenv("OPENAI_API_KEY")
+model_name: Final[str] = os.getenv("OPENAI_MODEL", "gpt-4o")
 pdf_file_text = []
 
 
@@ -21,7 +24,7 @@ def generate_intro_and_future(content: str) -> dict:
     基於內容生成前言和未來展望
     """
     llm = ChatOpenAI(
-        model_name="gpt-4o",
+        model_name=model_name,
         temperature=0.3,
         max_tokens=2000,
         api_key=api_key,
@@ -154,7 +157,7 @@ def main():
     st.title("上傳投影片 PDF 幫你寫成中文部落格")
 
     if not api_key:
-        st.error("請設定 openai_api_key 環境變數")
+        st.error("請設定 OPENAI_API_KEY 環境變數")
         return
 
     pdf_file = st.file_uploader("上傳 PDF 檔案", type=["pdf"])
