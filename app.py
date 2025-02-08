@@ -221,23 +221,16 @@ def main():
                 # 生成前言和未來展望
                 intro_and_future = generate_intro_and_future(full_content)
 
-                # 組合最終文章（未來展望放在最後）
-                final_blog_content = f"""
-{intro_and_future['intro']}
-
-## 技術內容
-
-{full_content}
-
-{intro_and_future['future']}
-"""
+                # 優化：如果前言已包含 markdown 標題，則不重複加入「## 技術內容」
+                if intro_and_future["intro"].lstrip().startswith("#"):
+                    final_blog_content = f"{intro_and_future['intro']}\n\n{full_content}\n\n{intro_and_future['future']}"
+                else:
+                    final_blog_content = f"{intro_and_future['intro']}\n\n## 技術內容\n\n{full_content}\n\n{intro_and_future['future']}"
 
                 # 顯示結果
                 tab1, tab2 = st.tabs(["渲染結果", "Markdown 原始碼"])
-
                 with tab1:
                     st.markdown(final_blog_content)
-
                 with tab2:
                     st.text_area(
                         "Markdown 原始碼",
