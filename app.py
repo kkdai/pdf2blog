@@ -155,6 +155,7 @@ def extract_content_from_json(json_obj):
 def main():
     st.set_page_config(page_title="上傳投影片 PDF 幫你寫成部落格", layout="wide")
     st.title("上傳投影片 PDF 幫你寫成中文部落格")
+    st.info(f"目前使用的 AI 模型：{model_name}")
 
     if not api_key:
         st.error("請設定 OPENAI_API_KEY 環境變數")
